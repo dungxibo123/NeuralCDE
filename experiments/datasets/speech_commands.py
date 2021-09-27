@@ -11,6 +11,7 @@ here = pathlib.Path(__file__).resolve().parent
 
 
 def download():
+    print("Download function")
     base_base_loc = here / 'data'
     base_loc = base_base_loc / 'SpeechCommands'
     loc = base_loc / 'speech_commands.tar.gz'
@@ -23,9 +24,12 @@ def download():
     urllib.request.urlretrieve('http://download.tensorflow.org/data/speech_commands_v0.02.tar.gz', loc)
     with tarfile.open(loc, 'r') as f:
         f.extractall(base_loc)
+    print("Download function end")
 
 
 def _process_data(intensity_data):
+
+    print("_process data  function")
     base_loc = here / 'data' / 'SpeechCommands'
     X = torch.empty(34975, 16000, 1)
     y = torch.empty(34975, dtype=torch.long)
@@ -35,8 +39,7 @@ def _process_data(intensity_data):
     for foldername in ('yes', 'no', 'up', 'down', 'left', 'right', 'on', 'off', 'stop', 'go'):
         loc = base_loc / foldername
         for filename in os.listdir(loc):
-            audio, _ = torchaudio.load_wav(loc / filename, channels_first=False,
-                                           normalization=False)  # for forward compatbility if they fix it
+            audio, _ = torchaudio.load(loc / filename, channels_first=False)  # for forward compatbility if they fix it
             audio = audio / 2 ** 15  # Normalization argument doesn't seem to work so we do it manually.
 
             # A few samples are shorter than the full length; for simplicity we discard them.
@@ -60,11 +63,14 @@ def _process_data(intensity_data):
      test_final_index, _) = common.preprocess_data(times, X, y, final_index, append_times=True,
                                                    append_intensity=intensity_data)
 
+    print("_process data  function end")
     return (times, train_coeffs, val_coeffs, test_coeffs, train_y, val_y, test_y, train_final_index, val_final_index,
             test_final_index)
 
 
 def get_data(intensity_data, batch_size):
+    print("_get data   function")
+
     base_base_loc = here / 'processed_data'
     loc = base_base_loc / ('speech_commands_with_mels' + ('_intensity' if intensity_data else ''))
     if os.path.exists(loc):
@@ -101,4 +107,7 @@ def get_data(intensity_data, batch_size):
                                                                                 test_final_index, 'cpu',
                                                                                 batch_size=batch_size)
 
+    
+
+    print("_process data  function end, before return")
     return times, train_dataloader, val_dataloader, test_dataloader

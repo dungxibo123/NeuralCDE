@@ -1,0 +1,10 @@
+torch                  
+torchaudio          
+torchcde             
+torchsde             
+torchvision
+torchdiffeq
+numpy
+matplotlib
+scikit-learn
+sktime  

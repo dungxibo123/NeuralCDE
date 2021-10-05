@@ -31,8 +31,9 @@ def _process_data(intensity_data):
 
     print("_process data  function")
     base_loc = here / 'data' / 'SpeechCommands'
-    X = torch.empty(34975, 16000, 1)
-    y = torch.empty(34975, dtype=torch.long)
+    amount_of_data = 34975
+    X = torch.empty(amount_of_data, 16000, 1)
+    y = torch.empty(amount_of_data, dtype=torch.long)
 
     batch_index = 0
     y_index = 0
@@ -50,11 +51,11 @@ def _process_data(intensity_data):
             y[batch_index] = y_index
             batch_index += 1
         y_index += 1
-    assert batch_index == 34975, "batch_index is {}".format(batch_index)
+    assert batch_index == amount_of_data, "batch_index is {}".format(batch_index)
 
     X = torchaudio.transforms.MFCC(log_mels=True, n_mfcc=20,
                                    melkwargs=dict(n_fft=200, n_mels=64))(X.squeeze(-1)).transpose(1, 2).detach()
-    # X is of shape (batch=34975, length=161, channels=20)
+    # X is of shape (batch=amount_of_data, length=161, channels=20)
 
     times = torch.linspace(0, X.size(1) - 1, X.size(1))
     final_index = torch.tensor(X.size(1) - 1).repeat(X.size(0))

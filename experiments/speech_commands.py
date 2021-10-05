@@ -2,12 +2,12 @@ import common
 import datasets
 
 
-def main(device='cuda', max_epochs=200, *,                                        # training parameters
+def main(device='cuda', max_epochs=100, *,                                        # training parameters
          model_name, hidden_channels, hidden_hidden_channels, num_hidden_layers,  # model parameters
          dry_run=False,
          **kwargs):                                                               # kwargs passed on to cdeint
 
-    batch_size = 1024
+    batch_size = 512
     lr = 0.00005 * (batch_size / 32)
 
     intensity_data = True if model_name in ('odernn', 'dt', 'decay') else False
@@ -38,5 +38,5 @@ def run_all(device, model_names=('ncde', 'odernn', 'dt', 'decay', 'gruode')):
                         gruode=dict(hidden_channels=160, hidden_hidden_channels=None, num_hidden_layers=None))
     for model_name in model_names:
         # Hyperparameters selected as what ODE-RNN did best with.
-        for _ in range(5):
+        for _ in range(1):
             main(device, model_name=model_name, **model_kwargs[model_name])
